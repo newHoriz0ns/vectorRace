@@ -84,20 +84,22 @@ class VectorRaceModel():
             savFiles.append(file)
         
         maxCntGhosts = 5
+        
+        selectedFiles = random.sample(savFiles, maxCntGhosts)
+        
         i = 1
-        for s in savFiles:
-            if(i <= maxCntGhosts):
-                d = saveRouteToFile.loadRouteFromFile(s)
-                if(d):
-                    trajectory = d["zuege"]
-                    ghost = Car(name=d["name"] + " (" + s + ")", pos=trajectory[0])
-                    ghost.setTrajectory(trajectory)
-                    
-                    itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage(f"cars/imgTestGhost{i}.bmp"))))
-                    ghost.setGfxItem(itemGhost, worldScale=15)
-                    
-                    others.append(ghost)
-                    i += 1
+        for s in selectedFiles:
+            d = saveRouteToFile.loadRouteFromFile(s)
+            if(d):
+                trajectory = d["zuege"]
+                ghost = Car(name=d["name"] + " (" + s + ")", pos=trajectory[0])
+                ghost.setTrajectory(trajectory)
+                
+                itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage(f"cars/imgTestGhost{i}.bmp"))))
+                ghost.setGfxItem(itemGhost, worldScale=15)
+                
+                others.append(ghost)
+                i += 1
                 
         return others
 
