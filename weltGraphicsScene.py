@@ -38,9 +38,9 @@ class WeltGraphicsScene(QGraphicsScene):
         self.loadPossibleMoveTiles()
 
         # Ghost
-        for i in range (1,len(self.m.playerliste)):
+        for i in range (1, len(self.m.playerliste)):        # Skip player 
             self.addItem(self.m.playerliste[i].gfxItem)
-            self.set_statusText(self.m.getGhost().name)
+            self.addItem(self.addPlayerTextItem(i, self.m.getGhost().name))
 
         # Player 
         self.addItem(self.m.getPlayer().gfxItem)
@@ -103,9 +103,16 @@ class WeltGraphicsScene(QGraphicsScene):
         
     def set_statusText(self, text):
         self.itemText.setHtml("<p style='color:blue'>" + text + "</p>")
-        
-
-
+    
+    
+    def addPlayerTextItem(self, nr, name):
+        itemText = QGraphicsTextItem("")
+        itemText.setPos(0, -25 - (25 * (nr+1)))
+        font = QFont("Arial", 8, QFont.Normal)
+        itemText.setFont(font)
+        colorTexts = ["#00f", "#f0f", "#0ff", "#6f0", "#f60"] 
+        itemText.setHtml((f"<p style='color:{colorTexts[nr-1]}'>" + name + "</p>"))
+        return itemText
 
 
 class PossibleMoveItem(QGraphicsRectItem):

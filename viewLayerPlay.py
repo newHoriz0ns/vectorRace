@@ -1,5 +1,6 @@
-
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QPushButton, QGraphicsScene, QLineEdit
+import os
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QPushButton, QGraphicsScene, QLineEdit, QComboBox
 from PyQt5.QtGui import QPen, QBrush, QColor
 
 from weltGraphicsViewWidget import WeltGraphicsViewWidget
@@ -33,8 +34,21 @@ class ViewLayerPlay(QGroupBox):
         self.statusGroup.setFixedWidth(250)
         layout.addWidget(self.statusGroup)
         
+        
+        # Track
+        self.statusTrackGroup = QGroupBox("Track")
+        self.statusCurrTrackCombo = NoArrowComboBox()
+        self.statusCurrTrackCombo.addItems(self.getTracks())
+        currTrackindex = self.statusCurrTrackCombo.findText(self.m.trackName)
+        self.statusCurrTrackCombo.setCurrentIndex(currTrackindex)
+        self.statusCurrTrackCombo.currentTextChanged.connect(self.changeTrack)
+        self.statusTrackLayout = QHBoxLayout()
+        self.statusTrackGroup.setLayout(self.statusTrackLayout)
+        self.statusTrackLayout.addWidget(self.statusCurrTrackCombo)
+        self.statusLayout.addWidget(self.statusTrackGroup)
+        
         # Name
-        self.statusNameGroup = QGroupBox("Spieler")
+        self.statusNameGroup = QGroupBox("Spielername")
         self.statusNameLayout = QHBoxLayout()
         self.statusNameGroup.setLayout(self.statusNameLayout)
         self.statusNameText = QLineEdit(self.m.getPlayer().name)
@@ -51,6 +65,16 @@ class ViewLayerPlay(QGroupBox):
         self.statusRundenLayout.addWidget(self.statusRundenText)
         self.statusLayout.addWidget(self.statusRundenGroup)
         
+        # Ghost
+        self.statusGhostGroup = QGroupBox("Track")
+        self.statusCurrGhostCombo = NoArrowComboBox()
+        self.statusCurrGhostCombo.addItems(self.getGhosts())
+        self.statusCurrGhostCombo.currentTextChanged.connect(self.changeGhost)
+        self.statusGhostLayout = QHBoxLayout()
+        self.statusGhostGroup.setLayout(self.statusGhostLayout)
+        self.statusGhostLayout.addWidget(self.statusCurrGhostCombo)
+        # self.statusLayout.addWidget(self.statusGhostGroup)        
+        
         # Abstandhalter
         self.statusLayout.addStretch(1)
         
@@ -65,6 +89,31 @@ class ViewLayerPlay(QGroupBox):
         self.statusLayout.addWidget(self.statusRestartButton)
         
         
+    def getTracks(self):
+        dir_path = "tracks"
+        return [name for name in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, name))]
+
+
+    def getGhosts(self):
+        dir_path = "tracks/" + self.m.trackName
+        return [name.split(".")[0] for name in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, name))]
+    
+        
+    def changeGhost(self, ghost):
+        self.m.changeGhost(ghost)
+    
+        
+    def changeTrack(self, trackName):
+        self.m.changeTrack(trackName)
+        
+        
+        
+        
     def updateView (self):
         self.weltView.update_graphicsView()
         self.statusRundenText.setText(str(len(self.m.getPlayer().moves) - 1))
+        
+class NoArrowComboBox(QComboBox):
+    def keyPressEvent(self, event):
+        return  # Ignore arrow keys
+        super().keyPressEvent(event)

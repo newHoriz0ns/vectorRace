@@ -11,7 +11,6 @@ def importTrackFromBMP(filepath) -> dict:
     return plt.imread(filepath)
 
 
-
 def importTrackByName(trackName) -> Track:
 
     im = importTrackFromBMP("tracks/" + trackName + "/map.bmp")

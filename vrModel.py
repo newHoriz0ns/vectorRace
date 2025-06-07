@@ -22,6 +22,15 @@ class VectorRaceModel():
         self.restart()
 
     
+    def changeTrack(self, newTrack):
+        self.trackName = newTrack
+        self.restart()
+        
+    
+    def changeGhost(self, ghost):
+        pass
+    
+    
     def restart(self):
         self.loadWorld(self.trackName)
         self.loadPlayers()
@@ -31,7 +40,8 @@ class VectorRaceModel():
         
 
     def loadWorld(self, track):
-        self.track = trackFromBmpReader.importTrackByName(track)        
+        self.track = trackFromBmpReader.importTrackByName(track)    
+        self.trackName = self.track.name    
 
 
     def loadPlayers(self):
@@ -73,19 +83,21 @@ class VectorRaceModel():
         for file in glob.glob("tracks/" + self.track.name + "/*.sav"):
             savFiles.append(file)
         
-        cnt = len(savFiles)
-        if(cnt > 0):
-            savId = random.randint(0,cnt-1)
-            d = saveRouteToFile.loadRouteFromFile(savFiles[savId])
-            if(d):
-                trajectory = d["zuege"]
-                ghost = Car(name=d["name"] + " (" + savFiles[savId] + ")", pos=trajectory[0])
-                ghost.setTrajectory(trajectory)
-                
-                itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage("imgTestGhost.bmp"))))
-                ghost.setGfxItem(itemGhost, worldScale=15)
-                
-                others.append(ghost)
+        maxCntGhosts = 5
+        i = 1
+        for s in savFiles:
+            if(i <= maxCntGhosts):
+                d = saveRouteToFile.loadRouteFromFile(s)
+                if(d):
+                    trajectory = d["zuege"]
+                    ghost = Car(name=d["name"] + " (" + s + ")", pos=trajectory[0])
+                    ghost.setTrajectory(trajectory)
+                    
+                    itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage(f"cars/imgTestGhost{i}.bmp"))))
+                    ghost.setGfxItem(itemGhost, worldScale=15)
+                    
+                    others.append(ghost)
+                    i += 1
                 
         return others
 
