@@ -1,0 +1,15 @@
+Ghost-Gegner
+===========
+- Wiederholung von selbst gespielten Routen
+-------------------------------------------------
+
+----
+- Replay
+
+----
+- Track Stats Speichern
+-- best (savename) -> Name, Anzahl, Datum?
+-- max Speed
+
+----
+- Track Theme
