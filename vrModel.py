@@ -83,7 +83,7 @@ class VectorRaceModel():
         for file in glob.glob("tracks/" + self.track.name + "/*.sav"):
             savFiles.append(file)
         
-        maxCntGhosts = 5
+        maxCntGhosts = min(5,len(savFiles))
         
         selectedFiles = random.sample(savFiles, maxCntGhosts)
         
