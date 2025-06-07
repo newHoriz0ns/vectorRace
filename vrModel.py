@@ -15,15 +15,15 @@ import saveRouteToFile
 class VectorRaceModel():
     UPDATE_RELOAD_MODEL_ITEMS = 0
     
-    def __init__(self, track):
+    def __init__(self, trackName):
         self.viewLayerManager = None
-        self.restart(track)
-        self.lastTrack = track
+        self.trackName = trackName
+        self.track = None
+        self.restart()
 
     
-    def restart(self, track=None):
-        if(track == None): track = self.lastTrack
-        self.loadWorld(track)
+    def restart(self):
+        self.loadWorld(self.trackName)
         self.loadPlayers()
 
         if(self.viewLayerManager != None):

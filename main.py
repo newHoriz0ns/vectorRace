@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     ###########
     # INIT MODEL HERE
-    m = vrModel.VectorRaceModel(track="Apri")
+    m = vrModel.VectorRaceModel(trackName="Apri")
     vrVlm = vlm.VectorRaceVLM(m)
 
     ###########
