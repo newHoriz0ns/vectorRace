@@ -3,7 +3,7 @@ import math
 import glob
 import random
 
-from PyQt5.QtWidgets import QGraphicsPixmapItem
+from PyQt5.QtWidgets import QGraphicsPixmapItem, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage
 
 import trackFromBmpReader
@@ -110,7 +110,30 @@ class VectorRaceModel():
         for i in range(1, len(self.playerliste)):
             self.playerliste[i].stepTrajectory()
             
+        self.checkCrash()
             
+    
+    def checkCrash(self):
+        pos = self.getPlayer().pos
+        crash = True
+        try:
+            crash = self.track.karte[pos[1]][pos[0]] == trackFromBmpReader.MAP_WALL
+        except:
+            crash = True    
+        
+        if(crash):
+            # Crash
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Crash!!!")
+            msg.setText("Game Over!")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.button(QMessageBox.Ok).setText("Neustart")
+            result = msg.exec_()
+            if result == QMessageBox.Ok:
+                self.restart()
+            else:
+                self.restart()   
             
 
     def update_model(self):

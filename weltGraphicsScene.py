@@ -19,8 +19,6 @@ class WeltGraphicsScene(QGraphicsScene):
         self.reloadItems()
 
         
-        # Setze Fokus auf (centerOn durch testView)
-        # self.set_centerItem(self.itemPlayer)
         
 
     def reloadItems(self):
@@ -40,11 +38,14 @@ class WeltGraphicsScene(QGraphicsScene):
         # Ghost
         for i in range (1, len(self.m.playerliste)):        # Skip player 
             self.addItem(self.m.playerliste[i].gfxItem)
-            self.addItem(self.addPlayerTextItem(i, self.m.getGhost().name))
+            self.addItem(self.addPlayerTextItem(i, self.m.playerliste[i].name))
 
         # Player 
-        self.addItem(self.m.getPlayer().gfxItem)
+        self.itemPlayer = self.m.getPlayer().gfxItem
+        self.addItem(self.itemPlayer)
         
+        # Setze Fokus auf (centerOn durch testView)
+        self.set_centerItem(self.itemPlayer)
 
 
 

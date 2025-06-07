@@ -14,7 +14,7 @@ def importTrackFromBMP(filepath) -> dict:
 def importTrackByName(trackName) -> Track:
 
     im = importTrackFromBMP("tracks/" + trackName + "/map.bmp")
-    map = [[MAP_WALL for x in range(len(im[y]))] for y in range(len(im))]
+    karte = [[MAP_WALL for x in range(len(im[y]))] for y in range(len(im))]
     startSpots = {}
 
     for y in range (len(im)):
@@ -22,12 +22,12 @@ def importTrackByName(trackName) -> Track:
             code = im[y][x]
             if(sum(code) != 3*255):
                 if(code[0] == 0):
-                        map[y][x] = MAP_SREET                        
+                        karte[y][x] = MAP_SREET                        
                 elif(code[0] == 100):
                     if(code[1] == 100):
-                        map[y][x] = MAP_ZIEL
+                        karte[y][x] = MAP_ZIEL
                     elif(code[1] > 0 and code[1] <= 10):
-                        map[y][x] = MAP_START
+                        karte[y][x] = MAP_START
                         startSpots[str(code[1])] = ([x, y])
 
-    return Track(trackName, map, startSpots)
+    return Track(trackName, karte, startSpots)
