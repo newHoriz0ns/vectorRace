@@ -1,11 +1,20 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsTextItem
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsSceneMouseEvent, QGraphicsTextItem, QGraphicsLineItem
 from PyQt5.QtGui import QColor, QBrush, QKeyEvent, QPen, QPixmap, QImage, QFont
 
 from vrModel import VectorRaceModel
 import trackFromBmpReader
 
 SCALE_FACTOR = 15   # Pixel pro Feld
+
+PLAYER_COLORS = [
+    QColor("red"),
+    QColor("blue"),
+    QColor("pink"),
+    QColor("cyan"),
+    QColor("green"),
+    QColor("orange")
+]
 
 class WeltGraphicsScene(QGraphicsScene):
 
@@ -14,6 +23,7 @@ class WeltGraphicsScene(QGraphicsScene):
         super().__init__()
         
         self.m = m
+        self.m.sig_UpdateLines.connect(self.update_Lines)
 
         # Model Items
         self.reloadItems()
@@ -81,10 +91,27 @@ class WeltGraphicsScene(QGraphicsScene):
             self.addItem(item)
 
 
+
     def update_graphicsScene(self):
         self.show_possibleMoves()
+        
+        
+    def update_Lines(self):
+        for i, p  in enumerate(self.m.playerliste):
+            
+            # print(f"{i}: {p.name}")
+            
+            lastPos = p.moves[-2]
+            newPos = p.moves[-1]
+            color = PLAYER_COLORS[i]
+            self.add_lineSegment(lastPos, newPos, color)
 
 
+    def add_lineSegment(self, lastPos, newPos, color=QColor("gray")):
+        item = QGraphicsLineItem(lastPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, lastPos[1] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[1] * SCALE_FACTOR + SCALE_FACTOR/2)
+        pen = QPen(color, 2)
+        item.setPen(pen)
+        self.addItem(item)
 
 
     def show_possibleMoves(self):
@@ -92,6 +119,9 @@ class WeltGraphicsScene(QGraphicsScene):
         for p in self.m.getPlayer().nextPossible:
             self.possibleMoveItems[i].setPos(p[0] * SCALE_FACTOR + 1, p[1] * SCALE_FACTOR + 1)
             i = i + 1
+            
+    
+
 
 
     def centerItem(self):

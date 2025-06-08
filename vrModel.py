@@ -5,6 +5,7 @@ import random
 
 from PyQt5.QtWidgets import QGraphicsPixmapItem, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtCore import QObject, pyqtSignal
 
 import trackFromBmpReader
 from car import Car
@@ -12,10 +13,15 @@ from car import Car
 import saveRouteToFile
 
 
-class VectorRaceModel():
+class VectorRaceModel(QObject):
+    
+    sig_UpdateLines = pyqtSignal()
+    
     UPDATE_RELOAD_MODEL_ITEMS = 0
     
     def __init__(self, trackName):
+        super().__init__()
+        
         self.viewLayerManager = None
         self.trackName = trackName
         self.track = None
@@ -112,6 +118,11 @@ class VectorRaceModel():
         for i in range(1, len(self.playerliste)):
             self.playerliste[i].stepTrajectory()
             
+        # Update GUI
+        self.sig_UpdateLines.emit()        
+            
+            
+        # Crash?
         self.checkCrash()
             
     

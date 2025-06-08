@@ -6,6 +6,7 @@ class Car():
 
         self.step = 0
         self.moves = []
+        self.trajectory = []
         self.moves.append([self.pos[0], self.pos[1]])
 
         self.lastMove = [0,0]
@@ -52,21 +53,18 @@ class Car():
         
                 
     def setTrajectory(self, trajectory):
-        self.moves = trajectory
+        self.trajectory = trajectory
         self.step = 0
         
         
     def stepTrajectory(self):
         self.step += 1
-        newPos = self.getCurrentPosition()
+        newPos = self.getTrajectoryAtStep(self.step)
         self.pos[0] = newPos[0]
         self.pos[1] = newPos[1]
+        self.moves.append(newPos)
         self.updateGfxItem()
                 
                 
-    def getCurrentPosition(self):
-        return self.getPositionAtStep(self.step)
-                
-                
-    def getPositionAtStep(self, step):
-        return self.moves[min(max(0,step), len(self.moves) - 1)]
+    def getTrajectoryAtStep(self, step):
+        return self.trajectory[min(max(0,step), len(self.trajectory) - 1)]
