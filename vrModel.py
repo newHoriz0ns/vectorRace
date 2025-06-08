@@ -129,12 +129,14 @@ class VectorRaceModel():
             msg.setIcon(QMessageBox.Critical)
             msg.setWindowTitle("Crash!!!")
             msg.setText("Game Over!")
-            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
             msg.button(QMessageBox.Ok).setText("Neustart")
+            msg.button(QMessageBox.Cancel).setText("Speichern")
             result = msg.exec_()
             if result == QMessageBox.Ok:
                 self.restart()
             else:
+                self.save()
                 self.restart()   
             
 
