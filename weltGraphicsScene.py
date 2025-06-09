@@ -7,15 +7,6 @@ import trackFromBmpReader
 
 SCALE_FACTOR = 15   # Pixel pro Feld
 
-PLAYER_COLORS = [
-    QColor("red"),
-    QColor("blue"),
-    QColor("pink"),
-    QColor("cyan"),
-    QColor("green"),
-    QColor("orange")
-]
-
 class WeltGraphicsScene(QGraphicsScene):
 
 
@@ -54,8 +45,13 @@ class WeltGraphicsScene(QGraphicsScene):
         self.itemPlayer = self.m.getPlayer().gfxItem
         self.addItem(self.itemPlayer)
         
+        
+        # Lines
+        self.lines = Lines(self)
+        self.lines.setMaximumSegmentCnt(80)
+        
         # Setze Fokus auf (centerOn durch testView)
-        self.set_centerItem(self.itemPlayer)
+        # self.set_centerItem(self.itemPlayer)
 
 
 
@@ -95,24 +91,13 @@ class WeltGraphicsScene(QGraphicsScene):
     def update_graphicsScene(self):
         self.show_possibleMoves()
         
-        
+                
     def update_Lines(self):
         for i, p  in enumerate(self.m.playerliste):
-            
-            # print(f"{i}: {p.name}")
-            
             lastPos = p.moves[-2]
             newPos = p.moves[-1]
-            color = PLAYER_COLORS[i]
-            self.add_lineSegment(lastPos, newPos, color)
-
-
-    def add_lineSegment(self, lastPos, newPos, color=QColor("gray")):
-        item = QGraphicsLineItem(lastPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, lastPos[1] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[1] * SCALE_FACTOR + SCALE_FACTOR/2)
-        pen = QPen(color, 2)
-        item.setPen(pen)
-        self.addItem(item)
-
+            self.lines.addLineSegment(i, lastPos, newPos)#
+            
 
     def show_possibleMoves(self):
         i = 0
@@ -158,3 +143,74 @@ class PossibleMoveItem(QGraphicsRectItem):
     def mouseDoubleClickEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         self.m.movePlayer(newPos=[int(self.pos().x() / SCALE_FACTOR), int(self.pos().y() / SCALE_FACTOR)])
         return super().mouseDoubleClickEvent(event)
+    
+    
+    
+    
+class Lines():   
+        
+    PLAYER_COLORS = [
+        QColor("red"),
+        QColor("blue"),
+        QColor("pink"),
+        QColor("cyan"),
+        QColor("green"),
+        QColor("orange")
+    ]
+    
+    def __init__(self, parent):
+        self.parent = parent
+        self.lines = {}
+        
+        self.lines = {
+            0:Line(self.parent, self.PLAYER_COLORS[0]),
+            1:Line(self.parent, self.PLAYER_COLORS[1]),
+            2:Line(self.parent, self.PLAYER_COLORS[2]),
+            3:Line(self.parent, self.PLAYER_COLORS[3]),
+            4:Line(self.parent, self.PLAYER_COLORS[4]),
+            5:Line(self.parent, self.PLAYER_COLORS[5])
+        }
+    
+    
+    def addLineSegment(self, playerId, lastPos, newPos):
+        self.lines[playerId].addLineSegment(playerId, lastPos, newPos)
+        
+    
+    def setMaximumSegmentCnt(self, cnt):
+        for l in self.lines:
+            self.lines[l].setMaximumSegmentCnt(cnt)
+        
+        
+    def resetLines(self, cnt=6):
+
+        for k in range(cnt):
+            for s in self.lines:
+                s.resetLine()
+        
+
+class Line():
+    
+    def __init__(self, parent, color, maxSementCnt=10000):
+        self.parent = parent
+        self.line = []
+        self.color = color
+        self.maxSegmentCnt = maxSementCnt
+        
+        
+    def setMaximumSegmentCnt(self, cnt):
+        self.maxSegmentCnt = cnt
+        
+        
+    def addLineSegment(self, playerId, lastPos, newPos):
+        item = QGraphicsLineItem(lastPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, lastPos[1] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[0] * SCALE_FACTOR + SCALE_FACTOR/2, newPos[1] * SCALE_FACTOR + SCALE_FACTOR/2)
+        pen = QPen(self.color, 1.0)
+        item.setPen(pen)
+        self.parent.addItem(item)
+        self.line.append(item)
+        if(len(self.line) > self.maxSegmentCnt):
+            self.parent.removeItem(self.line[0])
+            del self.line[0]
+        
+        
+    def resetLine(self):
+        pass
