@@ -7,8 +7,10 @@ import trackFromBmpReader
 
 SCALE_FACTOR = 15   # Pixel pro Feld
 
+
 class WeltGraphicsScene(QGraphicsScene):
 
+    MAX_LINE_LENGTH = 75
 
     def __init__(self, m: VectorRaceModel):
         super().__init__()
@@ -48,7 +50,7 @@ class WeltGraphicsScene(QGraphicsScene):
         
         # Lines
         self.lines = Lines(self)
-        self.lines.setMaximumSegmentCnt(80)
+        self.lines.setMaximumSegmentCnt(self.MAX_LINE_LENGTH)
         
         # Setze Fokus auf (centerOn durch testView)
         # self.set_centerItem(self.itemPlayer)
@@ -96,15 +98,27 @@ class WeltGraphicsScene(QGraphicsScene):
         for i, p  in enumerate(self.m.playerliste):
             lastPos = p.moves[-2]
             newPos = p.moves[-1]
-            self.lines.addLineSegment(i, lastPos, newPos)#
+            self.lines.addLineSegment(i, lastPos, newPos)
+
+
+    def setMaximumLineLength(self, length):
+        self.lines.setMaximumSegmentCnt(length)
+        self.MAX_LINE_LENGTH = length
             
 
     def show_possibleMoves(self):
+
+        # remove old
+        for i in self.possibleMoveItems:
+            self.removeItem(i)
+
+        # calc new position
         i = 0
         for p in self.m.getPlayer().nextPossible:
             self.possibleMoveItems[i].setPos(p[0] * SCALE_FACTOR + 1, p[1] * SCALE_FACTOR + 1)
+            self.addItem(self.possibleMoveItems[i])
             i = i + 1
-            
+        
     
 
 
@@ -199,6 +213,9 @@ class Line():
         
     def setMaximumSegmentCnt(self, cnt):
         self.maxSegmentCnt = cnt
+        while(len(self.line) > cnt):
+            self.parent.removeItem(self.line[0])
+            del self.line[0]
         
         
     def addLineSegment(self, playerId, lastPos, newPos):

@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QPushButton, QGraphicsScene, QLineEdit, QComboBox
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QPushButton, QGraphicsScene, QLineEdit, QComboBox, QSlider, QLabel
 from PyQt5.QtGui import QPen, QBrush, QColor
 
 from weltGraphicsViewWidget import WeltGraphicsViewWidget
@@ -66,7 +66,7 @@ class ViewLayerPlay(QGroupBox):
         self.statusLayout.addWidget(self.statusRundenGroup)
         
         # Ghost
-        self.statusGhostGroup = QGroupBox("Track")
+        self.statusGhostGroup = QGroupBox("Ghosts")
         self.statusCurrGhostCombo = NoArrowComboBox()
         self.statusCurrGhostCombo.addItems(self.getGhosts())
         self.statusCurrGhostCombo.currentTextChanged.connect(self.changeGhost)
@@ -74,6 +74,21 @@ class ViewLayerPlay(QGroupBox):
         self.statusGhostGroup.setLayout(self.statusGhostLayout)
         self.statusGhostLayout.addWidget(self.statusCurrGhostCombo)
         # self.statusLayout.addWidget(self.statusGhostGroup)        
+        
+        # Lines
+        self.statusLinesGroup = QGroupBox("Max. Spur Länge")
+        self.statusLinesLayout = QVBoxLayout()
+        self.statusLinesGroup.setLayout(self.statusLinesLayout)
+        self.statusLineLengthSlider = NoKeyHorizontalSlider(Qt.Horizontal)
+        self.statusLineLengthSlider.setMinimum(0)
+        self.statusLineLengthSlider.setMaximum(100)
+        self.statusLineLengthSlider.setSingleStep(1)
+        self.statusLineLengthSlider.setValue(75)
+        self.statusLineLengthSlider.valueChanged.connect(self.changeLineLength)
+        self.statusLinesLayout.addWidget(self.statusLineLengthSlider)
+        self.statusLineLengthValue = QLabel("75")
+        self.statusLinesLayout.addWidget(self.statusLineLengthValue)
+        self.statusLayout.addWidget(self.statusLinesGroup)
         
         # Abstandhalter
         self.statusLayout.addStretch(1)
@@ -85,9 +100,19 @@ class ViewLayerPlay(QGroupBox):
         
         # Restart
         self.statusRestartButton = QPushButton("Neustart")
-        self.statusRestartButton.clicked.connect(self.m.restart)
+        self.statusRestartButton.clicked.connect(self.restart)
         self.statusLayout.addWidget(self.statusRestartButton)
         
+
+    def restart(self):
+        self.m.restart()
+        self.weltView.setMaximumLineLength(self.statusLineLengthSlider.value())
+
+
+    def changeLineLength(self, value):
+        self.statusLineLengthValue.setText(str(value))
+        self.weltView.setMaximumLineLength(value)
+
         
     def getTracks(self):
         dir_path = "tracks"
@@ -105,15 +130,20 @@ class ViewLayerPlay(QGroupBox):
         
     def changeTrack(self, trackName):
         self.m.changeTrack(trackName)
-        
-        
+        self.weltView.setMaximumLineLength(self.statusLineLengthSlider.value())
         
         
     def updateView (self):
         self.weltView.update_graphicsView()
         self.statusRundenText.setText(str(len(self.m.getPlayer().moves) - 1))
+
+
         
 class NoArrowComboBox(QComboBox):
     def keyPressEvent(self, event):
         return  # Ignore arrow keys
-        super().keyPressEvent(event)
+
+
+class NoKeyHorizontalSlider(QSlider):
+    def keyPressEvent(self, event):
+        return

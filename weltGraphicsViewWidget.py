@@ -41,3 +41,7 @@ class WeltGraphicsViewWidget(QGraphicsView):
 
         # Update GL
         self.oglw.update
+
+
+    def setMaximumLineLength(self, length):
+        self.wgs.setMaximumLineLength(length)
