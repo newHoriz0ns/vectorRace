@@ -55,7 +55,7 @@ class VectorRaceModel(QObject):
         
         # Spieler
         carPlayer = Car("Paul", self.track.startSpots["1"])
-        itemPlayer = QGraphicsPixmapItem((QPixmap.fromImage(QImage("imgTestPlayer.bmp"))))
+        itemPlayer = QGraphicsPixmapItem((QPixmap.fromImage(QImage("cars/imgTestPlayer.png"))))
         carPlayer.setGfxItem(itemPlayer, worldScale=15)
         self.playerliste.append(carPlayer)
         
@@ -101,7 +101,7 @@ class VectorRaceModel(QObject):
                 ghost = Car(name=d["name"] + " (" + s + ")", pos=trajectory[0])
                 ghost.setTrajectory(trajectory)
                 
-                itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage(f"cars/imgTestGhost{i}.bmp"))))
+                itemGhost = QGraphicsPixmapItem((QPixmap.fromImage(QImage(f"cars/imgTestGhost{i}.png"))))
                 ghost.setGfxItem(itemGhost, worldScale=15)
                 
                 others.append(ghost)
